@@ -6,7 +6,6 @@ import logging
 import os
 import smtplib
 import ssl
-import sys
 import traceback
 import xml.dom.minidom
 import xml.etree.ElementTree as ET
@@ -58,11 +57,9 @@ def check_for_update(new_ip):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print('Missing arg WAN IP')
-        sys.exit()
+    new_ip = input()
     try:
-        if check_for_update(sys.argv[1]):
-            send_email(sys.argv[1])
+        if check_for_update(new_ip):
+            send_email(new_ip)
     except:
         logging.error(traceback.format_exc())
