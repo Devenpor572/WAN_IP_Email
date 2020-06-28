@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import configparser
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
