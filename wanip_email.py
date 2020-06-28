@@ -4,13 +4,20 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import logging
 import os
+import sys
 import smtplib
 import ssl
 import traceback
 import xml.dom.minidom
 import xml.etree.ElementTree as ET
 
-PARAMS_PATH = 'params.cfg'
+
+# https://stackoverflow.com/a/4943474
+def get_script_path():
+    return os.path.dirname(os.path.realpath(sys.argv[0]))
+
+
+PARAMS_PATH = os.path.join(get_script_path(), 'params.cfg')
 CONFIG = configparser.ConfigParser()
 CONFIG.read(PARAMS_PATH)
 
