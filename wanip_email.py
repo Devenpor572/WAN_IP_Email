@@ -70,7 +70,7 @@ def check_for_update(new_ip):
                 writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
                 writer.writerow({DATETIME_FIELD: now, IP_FIELD: new_ip})
         else:
-            logging.info(f'Datetime: {now}, IP: {new_ip}')
+            logging.info(f'No change, Datetime: {now}, IP: {new_ip}')
     else:
         logging.info(f'IP created, Datetime: {now}, New ip: {new_ip}')
         update = True
