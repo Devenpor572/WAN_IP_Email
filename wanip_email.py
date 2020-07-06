@@ -64,13 +64,15 @@ def check_for_update(new_ip):
         latest_row = rows[-1]
         old_ip = latest_row['ip']
         if new_ip != old_ip:
-            logging.info(f'IP updated, New ip: {new_ip}, Old ip: {old_ip}')
+            logging.info(f'IP updated, Datetime: {now}, New ip: {new_ip}, Old ip: {old_ip}')
             update = True
             with open(file_path, 'a', newline='') as file:
                 writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
                 writer.writerow({DATETIME_FIELD: now, IP_FIELD: new_ip})
+        else:
+            logging.info(f'Datetime: {now}, IP: {new_ip}')
     else:
-        logging.info(f'IP created, New ip: {new_ip}')
+        logging.info(f'IP created, Datetime: {now}, New ip: {new_ip}')
         update = True
         with open(file_path, 'w', newline='') as file:
             writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
