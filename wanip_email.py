@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import configparser
+import csv
+import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import logging
@@ -22,6 +24,10 @@ CONFIG = configparser.ConfigParser()
 CONFIG.read(PARAMS_PATH)
 
 logging.basicConfig(filename=CONFIG['params']['log_file'], level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
+
+DATETIME_FIELD = 'datetime'
+IP_FIELD = 'ip'
+FIELD_NAMES = [DATETIME_FIELD, IP_FIELD]
 
 
 def send_email(new_ip):
@@ -48,25 +54,33 @@ def send_email(new_ip):
 def check_for_update(new_ip):
     update = False
     file_path = CONFIG['params']['wan_ip_file']
+    now = datetime.datetime.now()
     if os.path.exists(file_path):
-        with open(file_path, 'r') as file:
-            old_ip = file.read()
+        with open(file_path, 'r', newline='') as csv_file:
+            reader = csv.DictReader(csv_file)
+            rows = []
+            for row in reader:
+                rows.append(row)
+        latest_row = rows[-1]
+        old_ip = latest_row['ip']
         if new_ip != old_ip:
             logging.info(f'IP updated, New ip: {new_ip}, Old ip: {old_ip}')
-            update = True
+            with open(file_path, 'a', newline='') as file:
+                writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
+                writer.writerow({DATETIME_FIELD: now, IP_FIELD: new_ip})
     else:
         logging.info(f'IP created, New ip: {new_ip}')
-        update = True
-    if update:
-        with open(file_path, 'w') as file:
-            file.write(new_ip)
+        with open(file_path, 'w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
+            writer.writeheader()
+            writer.writerow({DATETIME_FIELD: now, IP_FIELD: new_ip})
     return update
 
 
 if __name__ == '__main__':
-    new_ip = input()
+    ip = input()
     try:
-        if check_for_update(new_ip):
-            send_email(new_ip)
+        if check_for_update(ip):
+            send_email(ip)
     except:
         logging.error(traceback.format_exc())
