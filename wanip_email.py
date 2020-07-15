@@ -6,6 +6,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import logging
 import os
+import re
 import sys
 import smtplib
 import ssl
@@ -81,10 +82,14 @@ def check_for_update(new_ip):
     return update
 
 
+def valid_ip(new_ip):
+    return re.match(r'^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$', new_ip)
+
+
 if __name__ == '__main__':
     ip = input()
     try:
-        if check_for_update(ip):
+        if valid_ip(ip) and check_for_update(ip):
             send_email(ip)
     except:
         logging.error(traceback.format_exc())
